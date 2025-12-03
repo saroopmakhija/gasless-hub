@@ -1,0 +1,32 @@
+{
+  "dependencies": {
+    "@solana-program/system": "catalog:",
+    "@solana-program/token": "catalog:",
+    "@solana-program/token-2022": "catalog:",
+    "@solana/kit": "catalog:",
+    "ws": "catalog:"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:",
+    "@workspace/config-typescript": "workspace:*",
+    "@workspace/config-vitest": "workspace:*",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "license": "MIT",
+  "name": "@workspace/solana-client",
+  "private": false,
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "test": "vitest run",
+    "test:integration": "vitest run --config=vitest.integration.config.ts",
+    "test:integration:watch": "vitest --watch --config=vitest.integration.config.ts",
+    "test:watch": "vitest --watch"
+  },
+  "type": "module",
+  "version": "0.0.0"
+}

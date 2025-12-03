@@ -1,0 +1,78 @@
+import { readdirSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
+import type { CSpellSettings } from 'cspell'
+
+function findPackageJsonFiles(directory: string): string[] {
+  return readdirSync(directory, { withFileTypes: true }).flatMap((e) => {
+    if (e.name === 'node_modules') return []
+    const full = join(directory, e.name)
+    return e.isDirectory() ? findPackageJsonFiles(full) : e.name === 'package.json' ? [full] : []
+  })
+}
+
+function getAllDependencies(pkgPath: string): string[] {
+  const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'))
+  return [pkg.dependencies, pkg.devDependencies, pkg.peerDependencies, pkg.optionalDependencies, pkg.catalog]
+    .flatMap((deps) => Object.keys(deps || {}))
+    .flatMap((dep) => dep.replace('@', '').split(/[/-]/))
+}
+
+export function getPackageNames(): string[] {
+  const allDeps = new Set<string>(findPackageJsonFiles('.').flatMap(getAllDependencies))
+  return [...allDeps].sort()
+}
+
+const config: CSpellSettings = {
+  dictionaries: ['fullstack', 'html', 'css'],
+  ignorePaths: ['Cargo.toml', 'drizzle'],
+  import: ['@cspell/dict-es-es/cspell-ext.json'],
+  overrides: [
+    {
+      filename: '**/es/*.json',
+      language: 'en, es',
+    },
+  ],
+  useGitignore: true,
+  words: [
+    ...getPackageNames(),
+    // English
+    'arweave',
+    'beeman',
+    'blockhash',
+    'bootsplash',
+    'cypherpunk',
+    'datetimepicker',
+    'devnet',
+    'ellipsify',
+    'hackathon',
+    'hdkey',
+    'helius',
+    'lamport',
+    'lamports',
+    'localnet',
+    'mainnet',
+    'netinfo',
+    'nums',
+    'rtishchev',
+    'samui',
+    'seti',
+    'sidepanel',
+    'skia',
+    'solscan',
+    'surfpool',
+    'testnet',
+    'tobeycodes',
+    'unimodules',
+    'unruggable',
+    'viewpager',
+    'vitaly',
+    'wordlist',
+    'wordlists',
+    'worklets',
+    // Spanish
+    'mnemónica',
+    'redirecciona',
+  ],
+}
+
+export default config

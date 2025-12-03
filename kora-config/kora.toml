@@ -1,0 +1,121 @@
+# Kora Configuration for Gasless Hub
+# Fee payer that signs all transactions
+
+[kora]
+rpc_url = "https://api.devnet.solana.com"
+rate_limit = 100
+
+[kora.auth]
+
+# Cache configuration
+[kora.cache]
+enabled = false
+url = "redis://localhost:6379"
+default_ttl = 300
+account_ttl = 60
+
+# Enable/disable specific RPC methods
+[kora.enabled_methods]
+liveness = true
+estimate_transaction_fee = true
+get_supported_tokens = true
+sign_transaction = true
+sign_and_send_transaction = true
+transfer_transaction = true
+get_blockhash = true
+get_config = true
+get_payer_signer = true
+
+# Validation rules (top-level, not under [kora])
+[validation]
+max_allowed_lamports = 100_000_000  # 100 USDC max (for token transfers)
+max_signatures = 10
+price_source = "Mock"
+
+allowed_programs = [
+    "11111111111111111111111111111111",                      # System Program
+    "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",           # Token Program
+    "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",          # Token-2022
+    "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL",          # Associated Token
+    "ComputeBudget111111111111111111111111111111",          # Compute Budget
+    "JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4",          # Jupiter Aggregator
+    "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc",          # Orca Whirlpool
+    "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8",         # Raydium AMM
+    "Gf6cs1GPqrkNqvWiP3mxwP9ppd7Pd3q2YiffzZGeui2K",         # Fee Pool Program (devnet)
+]
+
+allowed_tokens = [
+    "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU", # USDC devnet
+]
+allowed_spl_paid_tokens = [
+    "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU", # USDC devnet
+]
+disallowed_accounts = []
+
+# Fee payer policy controls
+[validation.fee_payer_policy]
+
+[validation.fee_payer_policy.system]
+allow_transfer = true
+allow_assign = true
+allow_create_account = true
+allow_allocate = true
+
+[validation.fee_payer_policy.system.nonce]
+allow_initialize = true
+allow_advance = true
+allow_authorize = true
+allow_withdraw = true
+
+[validation.fee_payer_policy.spl_token]
+allow_transfer = true
+allow_burn = true
+allow_close_account = true
+allow_approve = true
+allow_revoke = true
+allow_set_authority = true
+allow_mint_to = true
+allow_initialize_mint = true
+allow_initialize_account = true
+allow_initialize_multisig = true
+allow_freeze_account = true
+allow_thaw_account = true
+
+[validation.fee_payer_policy.token_2022]
+allow_transfer = true
+allow_burn = true
+allow_close_account = true
+allow_approve = true
+allow_revoke = true
+allow_set_authority = true
+allow_mint_to = true
+allow_initialize_mint = true
+allow_initialize_account = true
+allow_initialize_multisig = true
+allow_freeze_account = true
+allow_thaw_account = true
+
+[validation.price]
+type = "free"
+margin = 0  # No markup for hackathon (free transactions)
+
+[validation.token2022]
+blocked_mint_extensions = []
+blocked_account_extensions = []
+
+# Metrics configuration
+[metrics]
+enabled = true
+endpoint = "/metrics"
+port = 9090
+scrape_interval = 60
+
+[metrics.fee_payer_balance]
+enabled = true
+expiry_seconds = 30
+
+[kora.usage_limit]
+enabled = false
+max_transactions = 1000
+cache_url = "redis://localhost:6379"
+fallback_if_unavailable = true

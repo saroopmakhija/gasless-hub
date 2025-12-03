@@ -1,0 +1,34 @@
+{
+  "dependencies": {
+    "@solana/kit": "catalog:",
+    "@tanstack/react-query": "catalog:",
+    "@workspace/db": "workspace:*",
+    "@workspace/db-react": "workspace:*",
+    "@workspace/keypair": "workspace:*",
+    "@workspace/solana-client": "workspace:*",
+    "@workspace/ui": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@workspace/config-typescript": "workspace:*",
+    "typescript": "catalog:"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.tsx"
+  },
+  "license": "MIT",
+  "name": "@workspace/solana-client-react",
+  "peerDependencies": {
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "private": false,
+  "scripts": {
+    "check-types": "tsc --noEmit"
+  },
+  "type": "module",
+  "version": "0.0.0"
+}

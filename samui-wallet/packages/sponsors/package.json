@@ -1,0 +1,29 @@
+{
+  "name": "@workspace/sponsors",
+  "version": "0.0.0",
+  "private": false,
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./*": "./src/*.tsx"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@solana/kit": "catalog:",
+    "@workspace/db-react": "workspace:*",
+    "@workspace/ui": "workspace:*",
+    "@solana/web3.js": "^1.95.8",
+    "@solana/spl-token": "^0.4.0",
+    "bs58": "^5.0.0",
+    "react": "catalog:",
+    "react-router": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "@workspace/config-typescript": "workspace:*",
+    "typescript": "catalog:"
+  }
+}
+

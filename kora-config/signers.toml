@@ -1,0 +1,12 @@
+# Kora Signers Configuration
+
+[signer_pool]
+# Strategy for selecting which signer to use
+# Options: "single", "round_robin", "least_balance", "random"
+strategy = "round_robin"
+
+# Define signers
+[[signers]]
+name = "fee_payer"
+type = "memory"
+private_key_env = "KORA_FEE_PAYER_KEY"
