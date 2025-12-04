@@ -5,7 +5,7 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    "./*": "./src/*.tsx"
+    "./*": "./src/*"
   },
   "scripts": {
     "check-types": "tsc --noEmit"

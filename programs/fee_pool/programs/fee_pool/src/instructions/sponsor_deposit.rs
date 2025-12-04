@@ -69,7 +69,7 @@ pub fn handler(ctx: Context<SponsorDeposit>, amount: u64) -> Result<()> {
     let cpi_accounts = Transfer {
         from: ctx.accounts.payer_usdc.to_account_info(),
         to: ctx.accounts.usdc_vault.to_account_info(),
-        authority: ctx.accounts.payer.to_account_info(),
+        authority: ctx.accounts.sponsor.to_account_info(), // Sponsor owns the USDC being transferred
     };
 
     let cpi_program = ctx.accounts.token_program.to_account_info();
