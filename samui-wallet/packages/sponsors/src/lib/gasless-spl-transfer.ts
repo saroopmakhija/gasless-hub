@@ -1,5 +1,9 @@
 import { Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js'
-import { createTransferInstruction, getAssociatedTokenAddress } from '@solana/spl-token'
+import {
+  createTransferInstruction,
+  getAssociatedTokenAddress,
+  createAssociatedTokenAccountInstruction,
+} from '@solana/spl-token'
 import { koraAdapter } from './kora-adapter'
 
 const KORA_FEE_PAYER = new PublicKey('CrcUrpw22y5Fwum4jRBPBiMcw98FWKgsQFGEpYsFNPgU')
@@ -59,6 +63,21 @@ export async function sendGaslessSplTransfer({
   const sourceTokenAccount = await getAssociatedTokenAddress(mintPubkey, sender.publicKey)
   const destinationTokenAccount = await getAssociatedTokenAddress(mintPubkey, destinationPubkey)
 
+  // Check if destination token account exists, create if needed
+  const destinationAccountInfo = await connection.getAccountInfo(destinationTokenAccount)
+  const instructions = []
+
+  if (!destinationAccountInfo) {
+    console.log('Creating destination token account...')
+    const createAtaInstruction = createAssociatedTokenAccountInstruction(
+      KORA_FEE_PAYER, // payer (Kora pays the rent)
+      destinationTokenAccount,
+      destinationPubkey, // owner
+      mintPubkey,
+    )
+    instructions.push(createAtaInstruction)
+  }
+
   // Create transfer instruction
   const transferInstruction = createTransferInstruction(
     sourceTokenAccount,
@@ -66,13 +85,14 @@ export async function sendGaslessSplTransfer({
     sender.publicKey,
     Number(amountBaseUnits),
   )
+  instructions.push(transferInstruction)
 
   // Build transaction with Kora as fee payer
   const blockhash = await fetchKoraBlockhash()
   const transaction = new Transaction()
   transaction.feePayer = KORA_FEE_PAYER
   transaction.recentBlockhash = blockhash
-  transaction.add(transferInstruction)
+  transaction.add(...instructions)
 
   // User signs the transaction (authorizing the transfer from their token account)
   transaction.partialSign(sender)
