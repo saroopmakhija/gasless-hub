@@ -11,6 +11,11 @@ export function getRuntime(): Runtime {
     return 'desktop'
   }
 
+  // Force web mode for localhost development (fix Chrome extension detection issue)
+  if (typeof window !== 'undefined' && window.location?.hostname === 'localhost') {
+    return 'web'
+  }
+
   if (browser?.runtime) {
     return 'extension'
   }

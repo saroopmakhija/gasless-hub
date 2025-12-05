@@ -12,6 +12,9 @@ interface Sponsor {
   metadata?: SponsorMetadata
 }
 
+const CACHE_KEY = 'sponsors_cache'
+const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
+
 export function SponsorBanner() {
   const [sponsors, setSponsors] = useState<Sponsor[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -19,6 +22,20 @@ export function SponsorBanner() {
   useEffect(() => {
     const fetchSponsors = async () => {
       try {
+        // Check cache first
+        const cached = localStorage.getItem(CACHE_KEY)
+        if (cached) {
+          const { data, timestamp } = JSON.parse(cached)
+          const age = Date.now() - timestamp
+
+          // Use cache if less than 5 minutes old
+          if (age < CACHE_DURATION) {
+            setSponsors(data)
+            return
+          }
+        }
+
+        // Fetch from backend if cache miss or stale
         const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001'
         const response = await fetch(`${backendUrl}/api/sponsors/with-metadata`)
         if (!response.ok) return
@@ -27,14 +44,23 @@ export function SponsorBanner() {
         const validSponsors = data.sponsors.filter(
           (s: Sponsor) => s.metadata?.name && s.metadata.logoUrl,
         )
+
+        // Update state and cache
         setSponsors(validSponsors)
+        localStorage.setItem(
+          CACHE_KEY,
+          JSON.stringify({
+            data: validSponsors,
+            timestamp: Date.now(),
+          }),
+        )
       } catch (error) {
         console.error('Failed to fetch sponsors:', error)
       }
     }
 
     fetchSponsors()
-    const fetchInterval = setInterval(fetchSponsors, 60000) // Refresh every minute
+    const fetchInterval = setInterval(fetchSponsors, 5 * 60 * 1000) // Check every 5 minutes
 
     return () => clearInterval(fetchInterval)
   }, [])
@@ -55,20 +81,20 @@ export function SponsorBanner() {
 
   return (
     <a
-      className="flex items-center space-x-2 px-3 py-1.5 bg-secondary/50 hover:bg-secondary/70 transition-colors border-b border-border"
+      className="flex items-center space-x-3 px-4 py-3 bg-secondary/50 hover:bg-secondary/70 transition-colors border-b border-border"
       href={currentSponsor.metadata?.website || '#'}
       rel="noopener noreferrer"
       target="_blank"
     >
-      <span className="text-xs text-muted-foreground">⚡ Gas Sponsored By:</span>
+      <span className="text-sm text-muted-foreground">⚡ Gas Sponsored By:</span>
       {currentSponsor.metadata?.logoUrl && (
         <img
           alt={currentSponsor.metadata.name}
-          className="h-4 w-4 rounded-full object-cover"
+          className="h-6 w-6 rounded-full object-cover"
           src={currentSponsor.metadata.logoUrl}
         />
       )}
-      <span className="text-xs font-semibold truncate">{currentSponsor.metadata?.name}</span>
+      <span className="text-sm font-semibold truncate">{currentSponsor.metadata?.name}</span>
     </a>
   )
 }

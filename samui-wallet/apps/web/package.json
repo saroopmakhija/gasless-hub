@@ -1,5 +1,10 @@
 {
   "dependencies": {
+    "@circle-fin/bridge-kit": "^1.1.2",
+    "@circle-fin/adapter-viem-v2": "^1.1.1",
+    "@circle-fin/adapter-solana": "^1.1.2",
+    "@solana/web3.js": "1.95.8",
+    "@solana/spl-token": "0.4.9",
     "@cloudflare/vite-plugin": "^1.13.15",
     "@workspace/env": "workspace:*",
     "@workspace/i18n": "workspace:*",
@@ -9,7 +14,8 @@
     "buffer": "^6.0.3",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "react-router": "catalog:"
+    "react-router": "catalog:",
+    "viem": "^2.21.54"
   },
   "devDependencies": {
     "@types/react": "catalog:",

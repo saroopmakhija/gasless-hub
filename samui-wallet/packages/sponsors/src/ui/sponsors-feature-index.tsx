@@ -5,6 +5,7 @@ import { useAccountActive } from '@workspace/db-react/use-account-active'
 import { PublicKey } from '@solana/web3.js'
 import { useEffect, useState } from 'react'
 import { SponsorRegisterModal } from './sponsor-register-modal'
+import { BaseSponsorDepositModal } from './base-sponsor-deposit-modal'
 
 interface SponsorMetadata {
   name: string
@@ -20,18 +21,42 @@ interface Sponsor {
   metadata?: SponsorMetadata
 }
 
+const SPONSORS_CACHE_KEY = 'sponsors_list_cache'
+const SPONSORS_CACHE_DURATION = 2 * 60 * 1000 // 2 minutes
+
 export function SponsorsFeatureIndex() {
   const activeAccount = useAccountActive()
   const [sponsors, setSponsors] = useState<Sponsor[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [showRegisterModal, setShowRegisterModal] = useState(false)
+  const [showBaseDepositModal, setShowBaseDepositModal] = useState(false)
 
   const publicKey = activeAccount?.publicKey ? new PublicKey(activeAccount.publicKey) : null
 
-  const fetchSponsors = async () => {
+  const fetchSponsors = async (forceRefresh = false) => {
     try {
       setLoading(true)
+
+      // Check cache first (unless force refresh)
+      if (!forceRefresh) {
+        const cached = localStorage.getItem(SPONSORS_CACHE_KEY)
+        if (cached) {
+          const { data, timestamp } = JSON.parse(cached)
+          const age = Date.now() - timestamp
+
+          // Use cache if less than 2 minutes old
+          if (age < SPONSORS_CACHE_DURATION) {
+            console.log('Loading sponsors from cache')
+            setSponsors(data)
+            setLoading(false)
+            return
+          }
+        }
+      }
+
+      // Fetch from backend
+      console.log('Fetching sponsors from backend...')
       const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001'
       const response = await fetch(`${backendUrl}/api/sponsors/with-metadata`)
 
@@ -48,6 +73,15 @@ export function SponsorsFeatureIndex() {
         .sort((a: Sponsor, b: Sponsor) => b.totalContributed - a.totalContributed)
 
       setSponsors(processedSponsors)
+
+      // Update cache
+      localStorage.setItem(
+        SPONSORS_CACHE_KEY,
+        JSON.stringify({
+          data: processedSponsors,
+          timestamp: Date.now(),
+        }),
+      )
     } catch (err: any) {
       console.error('Failed to fetch sponsors:', err)
       setError(err.message)
@@ -131,7 +165,7 @@ export function SponsorsFeatureIndex() {
                   <div className="text-right">
                     <p className="text-lg font-bold">{sponsor.totalContributed.toLocaleString()} USDC</p>
                     <p className="text-sm text-muted-foreground">
-                      {sponsor.transactionsSponsored} transactions
+                      Sponsoring gas fees
                     </p>
                   </div>
                 </div>
@@ -141,25 +175,63 @@ export function SponsorsFeatureIndex() {
         </CardContent>
       </Card>
 
-      <div className="text-center">
-        <Button
-          onClick={() => setShowRegisterModal(true)}
-          size="lg"
-        >
-          Become a Sponsor
-        </Button>
-      </div>
+      <Card className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-blue-500/20">
+        <CardHeader>
+          <CardTitle>Sponsor Gas Fees</CardTitle>
+          <CardDescription>Choose how you want to contribute to the fee pool</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 rounded-lg border border-border bg-card space-y-3">
+              <h3 className="font-semibold">Deposit from Solana</h3>
+              <p className="text-sm text-muted-foreground">
+                Register as a sponsor and deposit USDC directly from your Solana wallet
+              </p>
+              <Button onClick={() => setShowRegisterModal(true)} className="w-full">
+                Solana Deposit
+              </Button>
+            </div>
+            <div className="p-4 rounded-lg border border-blue-500/30 bg-blue-500/5 space-y-3">
+              <div className="flex items-center gap-2">
+                <h3 className="font-semibold">Deposit from Base</h3>
+                <span className="text-xs font-semibold px-2 py-1 rounded-full bg-blue-500 text-white">
+                  CROSS-CHAIN
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Bridge USDC from Base using Circle's CCTP - perfect for Base sponsors
+              </p>
+              <Button
+                onClick={() => setShowBaseDepositModal(true)}
+                className="w-full"
+                variant="default"
+              >
+                Base Deposit (CCTP)
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <SponsorRegisterModal
         isOpen={showRegisterModal}
         onClose={() => setShowRegisterModal(false)}
         onSuccess={() => {
           setShowRegisterModal(false)
-          // Refresh sponsor list
-          fetchSponsors()
+          fetchSponsors(true) // Force refresh after registration
         }}
         publicKey={publicKey}
         accountId={activeAccount?.id}
+      />
+
+      <BaseSponsorDepositModal
+        isOpen={showBaseDepositModal}
+        onClose={() => setShowBaseDepositModal(false)}
+        onSuccess={() => {
+          setShowBaseDepositModal(false)
+          fetchSponsors(true) // Force refresh after deposit
+        }}
+        feePoolAddress="CrcUrpw22y5Fwum4jRBPBiMcw98FWKgsQFGEpYsFNPgU"
       />
     </div>
   )

@@ -78,5 +78,13 @@
   },
   "type": "module",
   "version": "0.0.0",
-  "workspaces": ["apps/*", "packages/*", "turbo/*"]
+  "workspaces": ["apps/*", "packages/*", "turbo/*"],
+  "dependencies": {
+    "@circle-fin/adapter-solana": "1.1.2",
+    "@circle-fin/adapter-viem-v2": "1.1.1",
+    "@circle-fin/bridge-kit": "1.1.2",
+    "@solana/web3.js": "1.95.8",
+    "@solana/spl-token": "0.4.9",
+    "viem": "2.40.3"
+  }
 }

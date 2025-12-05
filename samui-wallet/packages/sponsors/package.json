@@ -11,12 +11,16 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@circle-fin/bridge-kit": "^1.1.1",
+    "@circle-fin/adapter-viem-v2": "^1.1.0",
+    "@circle-fin/adapter-solana": "^1.1.0",
     "@solana/kit": "catalog:",
     "@workspace/db-react": "workspace:*",
     "@workspace/ui": "workspace:*",
     "@solana/web3.js": "^1.95.8",
-    "@solana/spl-token": "^0.4.0",
+    "@solana/spl-token": "^0.4.9",
     "bs58": "^5.0.0",
+    "viem": "^2.21.54",
     "react": "catalog:",
     "react-router": "catalog:"
   },

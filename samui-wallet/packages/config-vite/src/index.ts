@@ -15,4 +15,20 @@ export const sharedConfig = defineConfig({
     }),
     tailwindcss(),
   ],
+  optimizeDeps: {
+    include: [
+      '@solana/web3.js',
+      '@solana/spl-token',
+      '@circle-fin/bridge-kit',
+      '@circle-fin/adapter-viem-v2',
+      '@circle-fin/adapter-solana',
+    ],
+    esbuildOptions: {
+      target: 'esnext',
+    },
+  },
+  define: {
+    'process.env': {},
+    global: 'globalThis',
+  },
 })
