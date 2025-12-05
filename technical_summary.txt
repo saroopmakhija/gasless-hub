@@ -1,0 +1,148 @@
+
+OVERVIEW
+--------
+Gasless Hub combines four core technologies to enable gasless Solana
+transactions with cross-chain sponsor deposits from Base:
+
+1. Solana Blockchain (Devnet)
+2. Anchor Smart Contract Framework (Fee Pool Program)
+3. Kora Paymaster System (Custom Rust Infrastructure)
+4. Circle CCTP (Cross-Chain Transfer Protocol)
+
+
+Technology Stack:
+-----------------
+• @solana/web3.js (v1.95.8) - Core SDK
+• @solana/spl-token (v0.4.9) - SPL Token Program integration
+• Native Solana Programs - System Program & Token Program
+
+Key Features:
+------------
+• Program Derived Addresses (PDAs)
+• Associated Token Accounts (ATAs)
+• Transaction fee sponsorship via feePayer
+• $0.00009 average transaction fee
+
+
+Fee Pool Program: Gf6cs1GPqrkNqvWiP3mxwP9ppd7Pd3q2YiffzZGeui2K
+Deployed on: Solana Devnet
+Size: 1.95 MB
+
+Program Responsibilities:
+------------------------
+1. Sponsor Metadata Storage (name, website, logo)
+2. USDC Deposit Tracking (sponsor_record accounts)
+3. Fee Pool Accounting (USDC vault management)
+4. Access Control (signature validation)
+
+Key Instructions:
+----------------
+• init_sponsor_metadata - Creates sponsor account
+• set_sponsor_metadata - Updates sponsor branding
+• sponsor_deposit - Transfers USDC to fee pool
+
+PDA Architecture:
+----------------
+fee_pool_pda = PDA(["fee_pool"], program_id)
+sponsor_metadata_pda = PDA(["sponsor_metadata", sponsor_pubkey], program_id)
+sponsor_record_pda = PDA(["sponsor_record", sponsor_pubkey], program_id)
+
+
+
+Architecture:
+------------
+• Language: Rust
+• Fee Payer: CrcUrpw22y5Fwum4jRBPBiMcw98FWKgsQFGEpYsFNPgU
+• RPC Interface: JSON-RPC 2.0 on port 8080
+
+How It Works:
+------------
+1. Frontend constructs transaction with Kora as feePayer
+2. User signs transaction (authorizes operations)
+3. Transaction sent to Kora RPC
+4. Kora co-signs as fee payer
+5. Kora broadcasts to Solana
+6. User pays $0 in fees
+
+RPC Methods:
+-----------
+• getBlockhash - Returns fresh blockhash
+• signTransaction - Co-signs without broadcasting
+• signAndSendTransaction - Co-signs and submits
+• /health - Service health check
+
+Security Model:
+--------------
+✓ Kora ONLY signs as fee payer (cannot move user funds)
+✓ User MUST sign to authorize transfers
+✓ Transaction validation before signing
+
+
+
+Integration Stack:
+-----------------
+• @circle-fin/bridge-kit (v1.1.2)
+• @circle-fin/adapter-viem-v2 (v1.1.1) - Base adapter
+• @circle-fin/adapter-solana (v1.1.2) - Solana adapter
+• viem (v2.40.3) - EVM wallet library
+
+Networks:
+--------
+Source: Base Sepolia
+  USDC: 0x036CbD53842c5426634e7929541eC2318f3dCF7e
+
+Destination: Solana Devnet
+  USDC: 4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU
+
+CCTP Flow:
+---------
+STEP 1: BURN → Sponsor approves USDC, Bridge Kit burns on Base
+STEP 2: ATTESTATION → Circle signs burn event off-chain
+STEP 3: MINT → USDC minted 1:1 on Solana to Kora's ATA
+
+Why CCTP?
+---------
+✓ Trust-minimized (no custodians)
+✓ 1:1 backing (native USDC, not wrapped)
+✓ No liquidity pools (infinite capacity, zero slippage)
+✓ $37B+ proven cross-chain volume
+✓ Regulatory compliance
+
+
+
+Base Sponsor Deposit Flow:
+--------------------------
+1. Sponsor connects MetaMask/Phantom EVM → Base Sepolia
+2. Enters USDC amount → Approves spend
+3. Bridge Kit burns USDC → Circle attestation
+4. USDC minted to Kora's Solana ATA
+5. Fee Pool program records deposit
+6. Sponsor appears on leaderboard
+
+Gasless User Transaction Flow:
+------------------------------
+1. User connects Phantom (no SOL required)
+2. Initiates transfer → Frontend constructs tx (Kora as feePayer)
+3. User signs → Kora co-signs → Broadcasts
+4. Transaction confirmed → User paid $0
+
+
+
+
+
+DEPLOYED CONTRACTS (SOLANA DEVNET)
+
+
+Fee Pool Program:
+  ID: Gf6cs1GPqrkNqvWiP3mxwP9ppd7Pd3q2YiffzZGeui2K
+  Explorer: https://explorer.solana.com/address/Gf6cs1GPqrkNqvWiP3mxwP9ppd7Pd3q2YiffzZGeui2K?cluster=devnet
+  Size: 1.95 MB
+  Balance: 13.57 SOL
+
+USDC Vault: 6EPYx8EvezNiowmRqt1siFuKo92knyYhveshJtgHjJVk
+Kora Fee Payer: CrcUrpw22y5Fwum4jRBPBiMcw98FWKgsQFGEpYsFNPgU
+Kora USDC Account: B2qVtxmjuTDK4uaVVfjva5dzVUEmfG5spVukmFVoh6RL
+
+
+
+

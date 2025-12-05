@@ -4,9 +4,28 @@
 
 ![Solana](https://img.shields.io/badge/Solana-Devnet-blueviolet)
 ![Circle CCTP](https://img.shields.io/badge/Circle-CCTP-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
 **Built for:** Midwest Blockchain Conference Hackathon 2025
 **Tracks:** Solana + Circle/USDC Bounty
+
+---
+
+## 📑 Table of Contents
+
+- [The Problem](#-the-problem)
+- [Our Solution](#-our-solution)
+- [Technical Summary](#-technical-summary)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Installation & Setup](#-installation--setup)
+- [Usage](#-usage)
+- [Deployed Contracts](#-deployed-contracts)
+- [Business Model & Revenue](#-business-model--revenue)
+- [Market Opportunity](#-market-opportunity)
+- [Hackathon Tracks & Bounties](#-hackathon-tracks--bounties)
+- [Roadmap](#-roadmap)
+- [Acknowledgments](#-acknowledgments)
 
 ---
 

@@ -11,6 +11,26 @@
 
 ---
 
+## 📑 Table of Contents
+
+- [The Problem](#-the-problem)
+- [Our Solution](#-our-solution)
+- [Technical Summary](#-technical-summary)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Installation & Setup](#-installation--setup)
+- [Usage](#-usage)
+- [Architecture](#-architecture)
+- [Deployed Contracts](#-deployed-contracts)
+- [Business Model & Revenue](#-business-model--revenue)
+- [Market Opportunity](#-market-opportunity)
+- [Hackathon Tracks & Bounties](#-hackathon-tracks--bounties)
+- [Roadmap](#-roadmap)
+- [License](#-license)
+- [Acknowledgments](#-acknowledgments)
+
+---
+
 ## 🎯 The Problem
 
 **60% of potential crypto users abandon onboarding because they need to buy tokens just to pay gas fees.**
